@@ -80,6 +80,7 @@ interface ImportSummary {
   startDate: string;
   endDate: string;
   categories: Record<string, number>;
+  imagesLoaded: number;
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -98,19 +99,30 @@ export default function ImportPanel() {
   const [errors, setErrors] = useState<string[]>([]);
   const [summary, setSummary] = useState<ImportSummary | null>(null);
 
-  const processFile = useCallback(
-    async (file: File) => {
+  const processFiles = useCallback(
+    async (files: FileList) => {
       setErrors([]);
       setSummary(null);
 
-      if (!file.name.endsWith(".json")) {
-        setErrors(["Please select a .json file."]);
+      // Separate JSON and image files
+      let jsonFile: File | null = null;
+      const imageFiles: File[] = [];
+      for (const file of Array.from(files)) {
+        if (file.name.endsWith(".json")) {
+          jsonFile = file;
+        } else if (file.type.startsWith("image/")) {
+          imageFiles.push(file);
+        }
+      }
+
+      if (!jsonFile) {
+        setErrors(["No .json file found. Please include a posts.json file."]);
         return;
       }
 
       let parsed: unknown;
       try {
-        const text = await file.text();
+        const text = await jsonFile.text();
         parsed = JSON.parse(text);
       } catch {
         setErrors(["The selected file is not valid JSON."]);
@@ -123,10 +135,32 @@ export default function ImportPanel() {
         return;
       }
 
+      // Read image files as base64 data URLs
+      const imageMap = new Map<string, string>();
+      await Promise.all(
+        imageFiles.map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                if (typeof reader.result === "string") {
+                  imageMap.set(img.name, reader.result);
+                }
+                resolve();
+              };
+              reader.onerror = () => resolve();
+              reader.readAsDataURL(img);
+            }),
+        ),
+      );
+
       setIsImporting(true);
       try {
-        const result = await importPosts(parsed as PostsImport);
-        setSummary(result);
+        const result = await importPosts(parsed as PostsImport, imageMap);
+        setSummary({
+          ...result,
+          imagesLoaded: imageMap.size,
+        });
       } catch (err) {
         setErrors([
           err instanceof Error ? err.message : "Import failed.",
@@ -142,19 +176,21 @@ export default function ImportPanel() {
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragging(false);
-      const file = e.dataTransfer.files[0];
-      if (file) void processFile(file);
+      if (e.dataTransfer.files.length > 0) {
+        void processFiles(e.dataTransfer.files);
+      }
     },
-    [processFile],
+    [processFiles],
   );
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) void processFile(file);
+      if (e.target.files && e.target.files.length > 0) {
+        void processFiles(e.target.files);
+      }
       e.target.value = "";
     },
-    [processFile],
+    [processFiles],
   );
 
   const resetImport = () => {
@@ -172,6 +208,10 @@ export default function ImportPanel() {
           <div style={statRow}>
             <span style={{ fontWeight: 600 }}>Total posts</span>
             <span>{summary.count}</span>
+          </div>
+          <div style={statRow}>
+            <span style={{ fontWeight: 600 }}>Screenshots loaded</span>
+            <span>{summary.imagesLoaded} / {summary.count}</span>
           </div>
           <div style={statRow}>
             <span style={{ fontWeight: 600 }}>Date range</span>
@@ -210,8 +250,8 @@ export default function ImportPanel() {
     <div style={wrapper}>
       <h1 style={{ fontSize: 24, margin: 0 }}>Import Posts</h1>
       <p style={{ color: "#666", marginTop: 8 }}>
-        Upload a generated <code>posts.json</code> file to import social media
-        posts.
+        Upload a generated <code>posts.json</code> file along with its
+        screenshot images to import social media posts.
       </p>
 
       <div
@@ -229,10 +269,10 @@ export default function ImportPanel() {
         ) : (
           <>
             <p style={{ margin: 0, fontSize: 16 }}>
-              📂 Drag &amp; drop your <strong>posts.json</strong> file here
+              📂 Drag &amp; drop your <strong>posts.json</strong> and screenshot images here
             </p>
             <p style={{ margin: "8px 0 0", fontSize: 13, color: "#aaa" }}>
-              or click to browse
+              or click to browse — select the JSON and all PNG files together
             </p>
           </>
         )}
@@ -241,7 +281,8 @@ export default function ImportPanel() {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".json"
+        accept=".json,image/*"
+        multiple
         style={{ display: "none" }}
         onChange={handleFileChange}
       />

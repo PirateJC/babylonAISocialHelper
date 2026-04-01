@@ -25,7 +25,7 @@ interface PostsContextValue {
   scheduledPosts: Post[];
   failedPosts: Post[];
   isLoadingRepo: boolean;
-  importPosts: (json: PostsImport) => Promise<ImportResult>;
+  importPosts: (json: PostsImport, imageFiles?: Map<string, string>) => Promise<ImportResult>;
   updateDraft: (id: string, changes: Partial<Post>) => void;
   removeDrafts: (ids: string[]) => void;
   clearDrafts: () => void;
@@ -64,7 +64,7 @@ export function PostsProvider({ children }: { children: ReactNode }) {
   }, [refreshRepoPosts]);
 
   const importPosts = useCallback(
-    async (json: PostsImport): Promise<ImportResult> => {
+    async (json: PostsImport, imageFiles?: Map<string, string>): Promise<ImportResult> => {
       const authToken = token ?? "";
       let scheduledDates: string[] = [];
       try {
@@ -74,6 +74,16 @@ export function PostsProvider({ children }: { children: ReactNode }) {
       }
 
       const dated = assignDates(json.posts, scheduledDates);
+
+      // Attach image data from uploaded files
+      if (imageFiles) {
+        for (const post of dated) {
+          const filename = post.media?.filePath?.split("/").pop();
+          if (filename && imageFiles.has(filename)) {
+            post.localImageData = imageFiles.get(filename)!;
+          }
+        }
+      }
 
       clearStorage();
       saveDrafts(dated);
