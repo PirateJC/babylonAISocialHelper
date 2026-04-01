@@ -44,7 +44,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "category", "text", "hashtags", "conditionalHashtags", "fullText", "characterCount", "link", "media", "metadata"],
+        "required": ["id", "category", "text", "hashtags", "conditionalHashtags", "link", "media", "metadata"],
         "properties": {
           "id": {
             "type": "string",
@@ -66,19 +66,6 @@
           "conditionalHashtags": {
             "type": "array",
             "items": { "type": "string" }
-          },
-          "fullText": {
-            "type": "string",
-            "minLength": 1
-          },
-          "characterCount": {
-            "type": "object",
-            "required": ["fullText", "bodyOnly", "withHashtags"],
-            "properties": {
-              "fullText": { "type": "integer", "minimum": 0 },
-              "bodyOnly": { "type": "integer", "minimum": 0 },
-              "withHashtags": { "type": "integer", "minimum": 0 }
-            }
           },
           "link": {
             "type": "object",
