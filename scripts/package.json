@@ -14,11 +14,13 @@
     "ajv": "^8.17.0",
     "ajv-formats": "^3.0.0",
     "@atproto/api": "^0.13.0",
-    "@octokit/rest": "^21.0.0"
+    "@octokit/rest": "^21.0.0",
+    "libsodium-wrappers": "^0.7.15"
   },
   "devDependencies": {
     "typescript": "~5.7.0",
     "tsx": "^4.19.0",
-    "@types/node": "^22.0.0"
+    "@types/node": "^22.0.0",
+    "@types/libsodium-wrappers": "^0.7.14"
   }
 }
