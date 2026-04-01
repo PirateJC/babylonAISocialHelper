@@ -1,0 +1,278 @@
+{
+  "generatedAt": "2025-01-15T10:00:00Z",
+  "generatedBy": "Babylon.js Social Media Agent",
+  "totalPosts": 10,
+  "config": {
+    "daysRequested": 10,
+    "contentMix": {
+      "featureHighlights": 0.4,
+      "communityDemos": 0.2,
+      "docsTutorials": 0.4
+    },
+    "emojiRate": 0.25,
+    "postingTime": "10:00 ET",
+    "platforms": ["x", "bluesky"]
+  },
+  "posts": [
+    {
+      "id": "post-001",
+      "category": "feature-highlight",
+      "text": "Babylon.js 7.0 introduces real-time global illumination that runs entirely on the GPU.",
+      "hashtags": ["#BabylonJS", "#WebGL", "#3D", "#GameDev", "#WebDev", "#JavaScript", "#OpenSource", "#Rendering"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://playground.babylonjs.com/#GI001",
+        "type": "playground",
+        "title": "Global Illumination Demo"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://playground.babylonjs.com/#GI001",
+        "description": "Screenshot showing global illumination in a Babylon.js scene",
+        "filePath": "media/post-001.png"
+      },
+      "metadata": {
+        "topic": "Global Illumination",
+        "babylonFeatureArea": "Rendering",
+        "contentSource": "https://doc.babylonjs.com/features/gi",
+        "usesEmoji": false,
+        "postFormat": "feature-statement",
+        "dayIndex": 1
+      }
+    },
+    {
+      "id": "post-002",
+      "category": "community-demo",
+      "text": "Check out this amazing WebXR escape room built with Babylon.js by a community developer!",
+      "hashtags": ["#BabylonJS", "#WebXR", "#VR", "#GameDev", "#BuiltWithBabylon", "#3D", "#IndieGame", "#WebDev"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://example.com/webxr-escape-room",
+        "type": "community-project",
+        "title": "WebXR Escape Room"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://example.com/webxr-escape-room",
+        "description": "Screenshot of a WebXR escape room built with Babylon.js",
+        "filePath": "media/post-002.png"
+      },
+      "metadata": {
+        "topic": "WebXR Escape Room",
+        "babylonFeatureArea": "WebXR",
+        "contentSource": "https://example.com/webxr-escape-room",
+        "usesEmoji": true,
+        "postFormat": "demo-showcase",
+        "dayIndex": 2
+      }
+    },
+    {
+      "id": "post-003",
+      "category": "docs-tutorial",
+      "text": "New to Babylon.js? Start with this step-by-step guide to building your first 3D scene in the browser.",
+      "hashtags": ["#BabylonJS", "#Tutorial", "#WebGL", "#3D", "#LearnToCode", "#JavaScript", "#WebDev", "#GameDev"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://doc.babylonjs.com/journey/theFirstStep",
+        "type": "docs",
+        "title": "Your First Scene"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://doc.babylonjs.com/journey/theFirstStep",
+        "description": "Screenshot of Babylon.js first scene tutorial page",
+        "filePath": "media/post-003.png"
+      },
+      "metadata": {
+        "topic": "Getting Started Tutorial",
+        "babylonFeatureArea": "Documentation",
+        "contentSource": "https://doc.babylonjs.com/journey/theFirstStep",
+        "usesEmoji": false,
+        "postFormat": "call-to-action",
+        "dayIndex": 3
+      }
+    },
+    {
+      "id": "post-004",
+      "category": "feature-highlight",
+      "text": "Did you know Babylon.js has a built-in physics engine powered by Havok? Try it in the playground.",
+      "hashtags": ["#BabylonJS", "#Physics", "#Havok", "#WebGL", "#GameDev", "#3D", "#WebDev", "#Simulation"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://playground.babylonjs.com/#HAVOK1",
+        "type": "playground",
+        "title": "Havok Physics Demo"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://playground.babylonjs.com/#HAVOK1",
+        "description": "Screenshot of Havok physics simulation in Babylon.js",
+        "filePath": "media/post-004.png"
+      },
+      "metadata": {
+        "topic": "Havok Physics Engine",
+        "babylonFeatureArea": "Physics",
+        "contentSource": "https://doc.babylonjs.com/features/physics",
+        "usesEmoji": false,
+        "postFormat": "question",
+        "dayIndex": 4
+      }
+    },
+    {
+      "id": "post-005",
+      "category": "docs-tutorial",
+      "text": "Learn how to create stunning PBR materials in Babylon.js with this comprehensive tutorial.",
+      "hashtags": ["#BabylonJS", "#PBR", "#Materials", "#3D", "#WebGL", "#Rendering", "#GameDev", "#WebDev"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://doc.babylonjs.com/features/materials/pbr",
+        "type": "docs",
+        "title": "PBR Materials Guide"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://doc.babylonjs.com/features/materials/pbr",
+        "description": "Screenshot of PBR materials documentation page",
+        "filePath": "media/post-005.png"
+      },
+      "metadata": {
+        "topic": "PBR Materials Tutorial",
+        "babylonFeatureArea": "Materials",
+        "contentSource": "https://doc.babylonjs.com/features/materials/pbr",
+        "usesEmoji": false,
+        "postFormat": "check-out",
+        "dayIndex": 5
+      }
+    },
+    {
+      "id": "post-006",
+      "category": "feature-highlight",
+      "text": "The Babylon.js Node Material Editor lets you build shaders visually — no code required! 🎨",
+      "hashtags": ["#BabylonJS", "#Shaders", "#NodeMaterial", "#3D", "#WebGL", "#GameDev", "#WebDev", "#Creative"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://nme.babylonjs.com",
+        "type": "playground",
+        "title": "Node Material Editor"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://nme.babylonjs.com",
+        "description": "Screenshot of the Babylon.js Node Material Editor interface",
+        "filePath": "media/post-006.png"
+      },
+      "metadata": {
+        "topic": "Node Material Editor",
+        "babylonFeatureArea": "Materials",
+        "contentSource": "https://doc.babylonjs.com/features/nme",
+        "usesEmoji": true,
+        "postFormat": "feature-statement",
+        "dayIndex": 6
+      }
+    },
+    {
+      "id": "post-007",
+      "category": "community-demo",
+      "text": "This procedural city generator built with Babylon.js is incredible. Great work from the community! 🏙️",
+      "hashtags": ["#BabylonJS", "#ProceduralGeneration", "#3D", "#GameDev", "#BuiltWithBabylon", "#WebGL", "#Creative", "#WebDev"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://example.com/procedural-city",
+        "type": "community-project",
+        "title": "Procedural City Generator"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://example.com/procedural-city",
+        "description": "Screenshot of a procedural city generated with Babylon.js",
+        "filePath": "media/post-007.png"
+      },
+      "metadata": {
+        "topic": "Procedural City Generator",
+        "babylonFeatureArea": "Community",
+        "contentSource": "https://example.com/procedural-city",
+        "usesEmoji": false,
+        "postFormat": "community-pride",
+        "dayIndex": 7
+      }
+    },
+    {
+      "id": "post-008",
+      "category": "docs-tutorial",
+      "text": "Babylon.js GUI system lets you build rich 2D and 3D interfaces. Here is the complete guide.",
+      "hashtags": ["#BabylonJS", "#GUI", "#UI", "#3D", "#WebGL", "#GameDev", "#UX", "#WebDev"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://doc.babylonjs.com/features/gui",
+        "type": "docs",
+        "title": "GUI System Guide"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://doc.babylonjs.com/features/gui",
+        "description": "Screenshot of Babylon.js GUI documentation",
+        "filePath": "media/post-008.png"
+      },
+      "metadata": {
+        "topic": "GUI System",
+        "babylonFeatureArea": "GUI",
+        "contentSource": "https://doc.babylonjs.com/features/gui",
+        "usesEmoji": false,
+        "postFormat": "check-out",
+        "dayIndex": 8
+      }
+    },
+    {
+      "id": "post-009",
+      "category": "feature-highlight",
+      "text": "Babylon.js supports glTF 2.0 natively — import your models directly from Blender or other 3D tools.",
+      "hashtags": ["#BabylonJS", "#glTF", "#3DModeling", "#Blender", "#WebGL", "#3D", "#GameDev", "#WebDev"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://doc.babylonjs.com/features/importers/glTF",
+        "type": "docs",
+        "title": "glTF Import Guide"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://doc.babylonjs.com/features/importers/glTF",
+        "description": "Screenshot showing glTF model imported into Babylon.js",
+        "filePath": "media/post-009.png"
+      },
+      "metadata": {
+        "topic": "glTF 2.0 Support",
+        "babylonFeatureArea": "Import/Export",
+        "contentSource": "https://doc.babylonjs.com/features/importers/glTF",
+        "usesEmoji": false,
+        "postFormat": "feature-statement",
+        "dayIndex": 9
+      }
+    },
+    {
+      "id": "post-010",
+      "category": "docs-tutorial",
+      "text": "Want to add animations to your Babylon.js scenes? This tutorial covers everything you need to know.",
+      "hashtags": ["#BabylonJS", "#Animation", "#3D", "#WebGL", "#GameDev", "#Tutorial", "#WebDev", "#JavaScript"],
+      "conditionalHashtags": [],
+      "link": {
+        "url": "https://doc.babylonjs.com/features/animations",
+        "type": "docs",
+        "title": "Animation Tutorial"
+      },
+      "media": {
+        "type": "screenshot",
+        "sourceUrl": "https://doc.babylonjs.com/features/animations",
+        "description": "Screenshot of Babylon.js animation tutorial page",
+        "filePath": "media/post-010.png"
+      },
+      "metadata": {
+        "topic": "Animation System",
+        "babylonFeatureArea": "Animation",
+        "contentSource": "https://doc.babylonjs.com/features/animations",
+        "usesEmoji": false,
+        "postFormat": "question",
+        "dayIndex": 10
+      }
+    }
+  ]
+}
