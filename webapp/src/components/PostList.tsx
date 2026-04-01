@@ -1,9 +1,13 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePosts } from "../context/PostsContext.tsx";
+import { useAuth } from "../context/AuthContext.tsx";
 import type { Post } from "../types/post.ts";
 import StatusBadge from "./StatusBadge.tsx";
 import CategoryBadge from "./CategoryBadge.tsx";
+import ConfirmModal from "./ConfirmModal.tsx";
+import { batchApprove, deleteScheduledPost, deleteFailedPost } from "../services/approve.ts";
+import { countPostGraphemes } from "../utils/grapheme-count.ts";
 
 /* ── styles ─────────────────────────────────────────────── */
 
@@ -115,13 +119,21 @@ const EMOJI_MAP: Record<string, string> = {
 
 export default function PostList() {
   const navigate = useNavigate();
-  const { drafts, scheduledPosts, failedPosts, isLoadingRepo } = usePosts();
+  const { token } = useAuth();
+  const { drafts, scheduledPosts, failedPosts, isLoadingRepo, removeDrafts, refreshRepoPosts } = usePosts();
 
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  /* ── batch operation state ──────────────────────────────── */
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
+  const [batchLabel, setBatchLabel] = useState("");
+  const [batchError, setBatchError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const allPosts: Post[] = useMemo(() => {
     const merged = [...drafts, ...scheduledPosts, ...failedPosts];
@@ -163,22 +175,109 @@ export default function PostList() {
   const handleAction = useCallback(
     (e: React.MouseEvent, post: Post) => {
       e.stopPropagation();
-      if (post.status === "draft") {
-        alert("Approve functionality coming in Task 3.8");
-      } else if (post.status === "scheduled") {
-        navigate(`/posts/${post.id}`);
-      } else {
-        alert("Retry functionality coming in Task 3.12");
-      }
+      navigate(`/posts/${post.id}`);
     },
     [navigate],
   );
 
   const actionLabel = (status: string) => {
-    if (status === "draft") return "Approve";
+    if (status === "draft") return "Edit";
     if (status === "scheduled") return "View";
-    return "Retry";
+    return "View";
   };
+
+  /* ── selected posts helper ────────────────────────────── */
+
+  const selectedPosts = useMemo(() => {
+    const all = [...drafts, ...scheduledPosts, ...failedPosts];
+    return all.filter((p) => selectedIds.has(p.id));
+  }, [drafts, scheduledPosts, failedPosts, selectedIds]);
+
+  /* ── batch approve ────────────────────────────────────── */
+
+  const handleBatchApprove = useCallback(async () => {
+    if (!token) return;
+
+    const draftPosts = selectedPosts.filter((p) => p.status === "draft");
+    if (draftPosts.length === 0) {
+      setBatchError("No draft posts selected.");
+      return;
+    }
+    if (draftPosts.length > 15) {
+      setBatchError(`Please select 15 or fewer posts. You have ${draftPosts.length} selected.`);
+      return;
+    }
+
+    // Pre-validate grapheme counts
+    const overLimit = draftPosts.filter(
+      (p) => countPostGraphemes(p.text, p.link?.url ?? "") > 300,
+    );
+    if (overLimit.length > 0) {
+      setBatchError(
+        `${overLimit.length} post(s) exceed 300 graphemes: ${overLimit.map((p) => p.id).join(", ")}. Fix before approving.`,
+      );
+      return;
+    }
+
+    setBatchRunning(true);
+    setBatchLabel("Approving");
+    setBatchError(null);
+
+    const result = await batchApprove(token, draftPosts, (current, total) => {
+      setBatchProgress({ current, total });
+    });
+
+    if (result.completedCount > 0) {
+      const approvedIds = draftPosts.slice(0, result.completedCount).map((p) => p.id);
+      removeDrafts(approvedIds);
+      await refreshRepoPosts();
+    }
+
+    setBatchRunning(false);
+    setBatchProgress(null);
+    setSelectedIds(new Set());
+
+    if (result.error) {
+      setBatchError(
+        `Batch stopped at ${result.failedPostId} (${result.completedCount}/${draftPosts.length}). ${result.error}`,
+      );
+    }
+  }, [token, selectedPosts, removeDrafts, refreshRepoPosts]);
+
+  /* ── batch delete ─────────────────────────────────────── */
+
+  const handleBatchDelete = useCallback(async () => {
+    if (!token) return;
+    setShowDeleteModal(false);
+    setBatchRunning(true);
+    setBatchLabel("Deleting");
+    setBatchError(null);
+
+    const posts = selectedPosts;
+    for (let i = 0; i < posts.length; i++) {
+      setBatchProgress({ current: i + 1, total: posts.length });
+      try {
+        const p = posts[i];
+        if (p.status === "draft") {
+          removeDrafts([p.id]);
+        } else if (p.status === "scheduled") {
+          await deleteScheduledPost(token, p);
+        } else if (p.status === "failed") {
+          await deleteFailedPost(token, p);
+        }
+      } catch (err) {
+        setBatchError(
+          `Delete failed at post ${posts[i].id} (${i + 1}/${posts.length}): ${err instanceof Error ? err.message : "Unknown error"}`,
+        );
+        break;
+      }
+    }
+
+    await refreshRepoPosts();
+    setBatchRunning(false);
+    setBatchProgress(null);
+    setSelectedIds(new Set());
+  }, [token, selectedPosts, removeDrafts, refreshRepoPosts]);
 
   /* ── empty state ──────────────────────────────────────── */
 
@@ -353,13 +452,15 @@ export default function PostList() {
           </span>
           <button
             style={{ ...batchBtn, background: "#2563eb", color: "#fff" }}
-            onClick={() => alert("Approve Selected — coming in Task 3.9")}
+            onClick={handleBatchApprove}
+            disabled={batchRunning}
           >
             Approve Selected
           </button>
           <button
             style={{ ...batchBtn, background: "#dc2626", color: "#fff" }}
-            onClick={() => alert("Delete Selected — coming in Task 3.10")}
+            onClick={() => setShowDeleteModal(true)}
+            disabled={batchRunning}
           >
             Delete Selected
           </button>
@@ -371,11 +472,113 @@ export default function PostList() {
               border: "1px solid rgba(255,255,255,0.3)",
             }}
             onClick={() => setSelectedIds(new Set())}
+            disabled={batchRunning}
           >
             Clear Selection
           </button>
         </div>
       )}
+
+      {/* ── batch error ─────────────────────────────────── */}
+      {batchError && (
+        <div
+          style={{
+            padding: "10px 16px",
+            borderRadius: 8,
+            margin: "12px 0",
+            background: "#fee2e2",
+            color: "#991b1b",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          {batchError}
+          <button
+            style={{
+              marginLeft: 12,
+              background: "none",
+              border: "none",
+              color: "#991b1b",
+              cursor: "pointer",
+              textDecoration: "underline",
+              fontSize: 13,
+            }}
+            onClick={() => setBatchError(null)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* ── batch progress overlay ──────────────────────── */}
+      {batchRunning && batchProgress && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              padding: "32px 40px",
+              textAlign: "center",
+              minWidth: 300,
+            }}
+          >
+            <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>
+              {batchLabel}…
+            </div>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 16 }}>
+              {batchLabel} {batchProgress.current} of {batchProgress.total}…
+            </div>
+            <div
+              style={{
+                width: "100%",
+                height: 8,
+                background: "#e5e7eb",
+                borderRadius: 4,
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${(batchProgress.current / batchProgress.total) * 100}%`,
+                  height: "100%",
+                  background: "#2563eb",
+                  borderRadius: 4,
+                  transition: "width 0.3s",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── delete confirmation modal ──────────────────── */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title={`Delete ${selectedPosts.length} post${selectedPosts.length !== 1 ? "s" : ""}?`}
+        message={
+          selectedPosts.some((p) => p.status !== "draft")
+            ? `This will remove ${selectedPosts.filter((p) => p.status !== "draft").length} post(s) from the repository and ${selectedPosts.filter((p) => p.status === "draft").length} draft(s) from your browser. This action cannot be undone.`
+            : "This will remove the selected drafts from your browser. This action cannot be undone."
+        }
+        warning={
+          selectedPosts.some((p) => p.status !== "draft")
+            ? "Scheduled and failed posts will also be removed from the repository."
+            : undefined
+        }
+        confirmLabel="Delete"
+        onConfirm={handleBatchDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </div>
   );
 }

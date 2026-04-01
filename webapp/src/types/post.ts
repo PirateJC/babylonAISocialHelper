@@ -15,6 +15,28 @@ export type PostFormat =
   | "community-pride"
   | "call-to-action";
 
+export interface PostLink {
+  url: string;
+  type: LinkType;
+  title: string;
+}
+
+export interface PostMedia {
+  type: "screenshot";
+  sourceUrl: string;
+  description: string;
+  filePath: string;
+}
+
+export interface PostMetadata {
+  topic: string;
+  babylonFeatureArea: string;
+  contentSource: string;
+  usesEmoji: boolean;
+  postFormat: PostFormat;
+  dayIndex: number;
+}
+
 export interface PlatformResult {
   platform: string;
   success: boolean;
@@ -30,13 +52,9 @@ export interface Post {
   text: string;
   hashtags: string[];
   conditionalHashtags: string[];
-  link: string;
-  media: string;
-  metadata: {
-    format: PostFormat;
-    linkType: LinkType;
-    charCount: number;
-  };
+  link: PostLink;
+  media: PostMedia;
+  metadata: PostMetadata;
   status: "draft" | "scheduled" | "failed";
   platformResults?: PlatformResult[];
   localImageData?: string;

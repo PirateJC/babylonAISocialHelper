@@ -14,6 +14,92 @@ function headers(token: string) {
   };
 }
 
+function headersJson(token: string) {
+  return {
+    ...headers(token),
+    "Content-Type": "application/json",
+  };
+}
+
+/* ── utf-8 safe base64 encoding ────────────────────────── */
+
+export function utf8ToBase64(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  const binString = Array.from(bytes, (byte) =>
+    String.fromCodePoint(byte),
+  ).join("");
+  return btoa(binString);
+}
+
+/* ── commit / delete helpers ────────────────────────────── */
+
+export async function commitFileToRepo(
+  token: string,
+  path: string,
+  base64Content: string,
+  message: string,
+): Promise<void> {
+  // Try to get existing file SHA for update (not required for create)
+  let sha: string | undefined;
+  try {
+    const getRes = await fetch(
+      `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`,
+      { headers: headers(token) },
+    );
+    if (getRes.ok) {
+      const data = (await getRes.json()) as { sha: string };
+      sha = data.sha;
+    }
+  } catch {
+    // file doesn't exist yet — that's fine
+  }
+
+  const body: Record<string, string> = { message, content: base64Content };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(
+    `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`,
+    { method: "PUT", headers: headersJson(token), body: JSON.stringify(body) },
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`GitHub commit failed (${res.status}): ${err}`);
+  }
+}
+
+export async function deleteRepoFile(
+  token: string,
+  path: string,
+  message: string,
+): Promise<void> {
+  // Get file SHA
+  const getRes = await fetch(
+    `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`,
+    { headers: headers(token) },
+  );
+
+  if (getRes.status === 404) return; // already deleted
+
+  if (!getRes.ok) throw new Error(`GitHub API error: ${getRes.status}`);
+
+  const data = (await getRes.json()) as { sha: string };
+
+  const res = await fetch(
+    `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`,
+    {
+      method: "DELETE",
+      headers: headersJson(token),
+      body: JSON.stringify({ message, sha: data.sha }),
+    },
+  );
+
+  if (!res.ok && res.status !== 404) {
+    const err = await res.text();
+    throw new Error(`GitHub delete failed (${res.status}): ${err}`);
+  }
+}
+
 export async function fetchDirectoryListing(
   token: string,
   owner: string,
