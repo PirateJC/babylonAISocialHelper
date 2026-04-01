@@ -5,3 +5,4 @@ skills/
 *.local
 .wrangler/
 output/
+*.zip

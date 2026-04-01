@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import JSZip from "jszip";
 import { usePosts } from "../context/PostsContext.tsx";
 import type { PostsImport } from "../types/post.ts";
 
@@ -99,33 +100,43 @@ export default function ImportPanel() {
   const [errors, setErrors] = useState<string[]>([]);
   const [summary, setSummary] = useState<ImportSummary | null>(null);
 
-  const processFiles = useCallback(
-    async (files: FileList) => {
+  const processFile = useCallback(
+    async (file: File) => {
       setErrors([]);
       setSummary(null);
 
-      // Separate JSON and image files
-      let jsonFile: File | null = null;
-      const imageFiles: File[] = [];
-      for (const file of Array.from(files)) {
-        if (file.name.endsWith(".json")) {
-          jsonFile = file;
-        } else if (file.type.startsWith("image/")) {
-          imageFiles.push(file);
-        }
+      if (!file.name.endsWith(".zip")) {
+        setErrors(["Please select a .zip file containing posts.json and screenshots."]);
+        return;
       }
 
-      if (!jsonFile) {
-        setErrors(["No .json file found. Please include a posts.json file."]);
+      let zip: JSZip;
+      try {
+        zip = await JSZip.loadAsync(file);
+      } catch {
+        setErrors(["Could not read the ZIP file. It may be corrupted."]);
+        return;
+      }
+
+      // Find posts.json inside the zip (may be at root or in a subfolder)
+      let jsonEntry: JSZip.JSZipObject | null = null;
+      zip.forEach((path, entry) => {
+        if (!entry.dir && path.endsWith("posts.json")) {
+          jsonEntry = entry;
+        }
+      });
+
+      if (!jsonEntry) {
+        setErrors(["No posts.json found inside the ZIP file."]);
         return;
       }
 
       let parsed: unknown;
       try {
-        const text = await jsonFile.text();
+        const text = await (jsonEntry as JSZip.JSZipObject).async("text");
         parsed = JSON.parse(text);
       } catch {
-        setErrors(["The selected file is not valid JSON."]);
+        setErrors(["posts.json inside the ZIP is not valid JSON."]);
         return;
       }
 
@@ -135,23 +146,31 @@ export default function ImportPanel() {
         return;
       }
 
-      // Read image files as base64 data URLs
+      // Extract images from the zip and build a filename → dataURL map
       const imageMap = new Map<string, string>();
+      const imageEntries: [string, JSZip.JSZipObject][] = [];
+      zip.forEach((path, entry) => {
+        if (!entry.dir && /\.(png|jpe?g|webp|gif)$/i.test(path)) {
+          imageEntries.push([path, entry]);
+        }
+      });
+
       await Promise.all(
-        imageFiles.map(
-          (img) =>
-            new Promise<void>((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => {
-                if (typeof reader.result === "string") {
-                  imageMap.set(img.name, reader.result);
-                }
-                resolve();
-              };
-              reader.onerror = () => resolve();
-              reader.readAsDataURL(img);
-            }),
-        ),
+        imageEntries.map(async ([path, entry]) => {
+          const blob = await entry.async("blob");
+          const ext = path.split(".").pop()?.toLowerCase() ?? "png";
+          const mime = ext === "jpg" || ext === "jpeg" ? "image/jpeg"
+            : ext === "webp" ? "image/webp"
+            : ext === "gif" ? "image/gif"
+            : "image/png";
+          const dataUrl = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(new Blob([blob], { type: mime }));
+          });
+          const filename = path.split("/").pop()!;
+          imageMap.set(filename, dataUrl);
+        }),
       );
 
       setIsImporting(true);
@@ -176,21 +195,19 @@ export default function ImportPanel() {
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragging(false);
-      if (e.dataTransfer.files.length > 0) {
-        void processFiles(e.dataTransfer.files);
-      }
+      const file = e.dataTransfer.files[0];
+      if (file) void processFile(file);
     },
-    [processFiles],
+    [processFile],
   );
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files.length > 0) {
-        void processFiles(e.target.files);
-      }
+      const file = e.target.files?.[0];
+      if (file) void processFile(file);
       e.target.value = "";
     },
-    [processFiles],
+    [processFile],
   );
 
   const resetImport = () => {
@@ -250,8 +267,8 @@ export default function ImportPanel() {
     <div style={wrapper}>
       <h1 style={{ fontSize: 24, margin: 0 }}>Import Posts</h1>
       <p style={{ color: "#666", marginTop: 8 }}>
-        Upload a generated <code>posts.json</code> file along with its
-        screenshot images to import social media posts.
+        Upload the generated <code>.zip</code> bundle containing posts.json and
+        screenshot images.
       </p>
 
       <div
@@ -269,10 +286,10 @@ export default function ImportPanel() {
         ) : (
           <>
             <p style={{ margin: 0, fontSize: 16 }}>
-              📂 Drag &amp; drop your <strong>posts.json</strong> and screenshot images here
+              📦 Drag &amp; drop your generated <strong>.zip</strong> bundle here
             </p>
             <p style={{ margin: "8px 0 0", fontSize: 13, color: "#aaa" }}>
-              or click to browse — select the JSON and all PNG files together
+              or click to browse
             </p>
           </>
         )}
@@ -281,8 +298,7 @@ export default function ImportPanel() {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".json,image/*"
-        multiple
+        accept=".zip"
         style={{ display: "none" }}
         onChange={handleFileChange}
       />
