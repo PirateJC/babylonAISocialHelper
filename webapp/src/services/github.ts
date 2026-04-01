@@ -1,7 +1,7 @@
 import type { Post } from "../types/post.ts";
 
 export const REPO_OWNER =
-  import.meta.env.VITE_REPO_OWNER || "BabylonJS";
+  import.meta.env.VITE_REPO_OWNER || "PirateJC";
 export const REPO_NAME =
   import.meta.env.VITE_REPO_NAME || "babylonAISocialHelper";
 

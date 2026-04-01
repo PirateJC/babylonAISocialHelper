@@ -4,31 +4,30 @@
 
 | M | ID | Task | Skill | Notes |
 |---|----|------|-------|-------|
-| | T-06 | Initialize repo scaffolding | execute-implementation-plan | See implementation_plan/01_01_repo_scaffolding.md |
-| | T-07 | Finalize JSON schema | execute-implementation-plan | See implementation_plan/01_02_schema_finalization.md |
-| | T-08 | Skill validation tooling | execute-implementation-plan | See implementation_plan/01_03_skill_validation_tooling.md |
-| | T-09 | Shared posting types & retry utility | execute-implementation-plan | See implementation_plan/02_01_posting_types_and_retry.md |
-| | T-10 | Bluesky posting module | execute-implementation-plan | See implementation_plan/02_02_bluesky_posting_module.md |
-| | T-11 | LinkedIn posting module | execute-implementation-plan | See implementation_plan/02_03_linkedin_posting_module.md |
-| | T-12 | X/Twitter posting module | execute-implementation-plan | See implementation_plan/02_04_x_posting_module.md |
-| | T-13 | Posting orchestrator | execute-implementation-plan | See implementation_plan/02_05_posting_orchestrator.md |
-| | T-14 | GitHub Actions workflow | execute-implementation-plan | See implementation_plan/02_06_github_actions_workflow.md |
-| | T-15 | Dry-run mode & testing | execute-implementation-plan | See implementation_plan/02_07_dry_run_and_testing.md |
-| | T-16 | Scaffold React web app | execute-implementation-plan | See implementation_plan/03_01_webapp_scaffold.md |
-| | T-17 | Cloudflare OAuth proxy | execute-implementation-plan | See implementation_plan/03_02_cloudflare_oauth_proxy.md |
-| | T-18 | Authentication flow | execute-implementation-plan | See implementation_plan/03_03_authentication_flow.md |
-| | T-19 | Post import & date assignment | execute-implementation-plan | See implementation_plan/03_04_post_import_and_dates.md |
-| | T-20 | Post list view | execute-implementation-plan | See implementation_plan/03_05_post_list_view.md |
-| | T-21 | Post detail view | execute-implementation-plan | See implementation_plan/03_06_post_detail_view.md |
-| | T-22 | Post editing | execute-implementation-plan | See implementation_plan/03_07_post_editing.md |
-| | T-23 | Individual approve | execute-implementation-plan | See implementation_plan/03_08_individual_approve.md |
-| | T-24 | Batch approve | execute-implementation-plan | See implementation_plan/03_09_batch_approve.md |
-| | T-25 | Delete (single & batch) | execute-implementation-plan | See implementation_plan/03_10_delete_single_and_batch.md |
-| | T-26 | Status tracking | execute-implementation-plan | See implementation_plan/03_11_status_tracking.md |
-| | T-27 | Failed post retry | execute-implementation-plan | See implementation_plan/03_12_failed_post_retry.md |
-| | T-28 | GitHub Pages deployment | execute-implementation-plan | See implementation_plan/03_13_github_pages_deployment.md |
-| | T-29 | End-to-end testing | execute-implementation-plan | See implementation_plan/04_01_end_to_end_testing.md |
-| | T-30 | Content generation skill testing | execute-implementation-plan | See implementation_plan/04_02_content_generation_skill_testing.md |
+| | T-07 | Finalize JSON schema | execute-implementation-plan | done 2026-04-01 · 3828b1c |
+| | T-08 | Skill validation tooling | execute-implementation-plan | done 2026-04-01 · 12e8a91 |
+| | T-09 | Shared posting types & retry utility | execute-implementation-plan | done 2026-04-01 · 76f6372 |
+| | T-10 | Bluesky posting module | execute-implementation-plan | done 2026-04-01 · 5845e58 |
+| | T-11 | LinkedIn posting module | execute-implementation-plan | done 2026-04-01 · 1fa4e9b |
+| | T-12 | X/Twitter posting module | execute-implementation-plan | done 2026-04-01 · 1038321 |
+| | T-13 | Posting orchestrator | execute-implementation-plan | done 2026-04-01 · e45d56f |
+| | T-14 | GitHub Actions workflow | execute-implementation-plan | done 2026-04-01 · 188fecc |
+| | T-15 | Dry-run mode & testing | execute-implementation-plan | done 2026-04-01 · 7a00fc1 |
+| | T-16 | Scaffold React web app | execute-implementation-plan | done 2026-04-01 · 29a162c |
+| | T-17 | Cloudflare OAuth proxy | execute-implementation-plan | done 2026-04-01 · 6464d9c |
+| | T-18 | Authentication flow | execute-implementation-plan | done 2026-04-01 · 5bd5bea |
+| | T-19 | Post import & date assignment | execute-implementation-plan | done 2026-04-01 · 32124e5 |
+| | T-20 | Post list view | execute-implementation-plan | done 2026-04-01 · 32124e5 |
+| | T-21 | Post detail view | execute-implementation-plan | done 2026-04-01 · c0c82da |
+| | T-22 | Post editing | execute-implementation-plan | done 2026-04-01 · c0c82da |
+| | T-23 | Individual approve | execute-implementation-plan | done 2026-04-01 · c0c82da |
+| | T-24 | Batch approve | execute-implementation-plan | done 2026-04-01 · c0c82da |
+| | T-25 | Delete (single & batch) | execute-implementation-plan | done 2026-04-01 · c0c82da |
+| | T-26 | Status tracking | execute-implementation-plan | done 2026-04-01 · bb5d0ff |
+| | T-27 | Failed post retry | execute-implementation-plan | done 2026-04-01 · bb5d0ff |
+| | T-28 | GitHub Pages deployment | execute-implementation-plan | done 2026-04-01 · bb5d0ff |
+| | T-29 | End-to-end testing | execute-implementation-plan | deferred — run after push to GitHub |
+| | T-30 | Content generation skill testing | execute-implementation-plan | done 2026-04-01 · 5 posts generated + validated |
 
 ## Completed
 
@@ -39,6 +38,7 @@
 | | T-03 | Requirements | write-requirements | done 2026-03-31 · specs/BabylonSocialHelper/requirements.md |
 | | T-04 | Architecture | write-architecture | done 2026-03-31 · specs/BabylonSocialHelper/architecture.md |
 | | T-05 | Implementation plan | write-implementation-plan | done 2026-03-31 · specs/BabylonSocialHelper/implementation_plan/ |
+| | T-06 | Initialize repo scaffolding | execute-implementation-plan | done 2026-04-01 · 9dcc925 |
 
 ## Untriaged
 

@@ -3,7 +3,7 @@ main = "src/index.ts"
 compatibility_date = "2026-04-01"
 
 [vars]
-ALLOWED_ORIGIN = "https://babylonjs.github.io"
+ALLOWED_ORIGIN = "https://piratejc.github.io"
 
 # Secrets (set via wrangler secret put):
 # GITHUB_CLIENT_ID

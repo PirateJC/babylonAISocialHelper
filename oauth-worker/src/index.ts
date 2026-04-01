@@ -1,10 +1,4 @@
-interface Env {
-  GITHUB_CLIENT_ID: string;
-  GITHUB_CLIENT_SECRET: string;
-  ALLOWED_ORIGIN: string;
-}
-
-function corsHeaders(env: Env): Record<string, string> {
+function corsHeaders(env) {
   return {
     "Access-Control-Allow-Origin": env.ALLOWED_ORIGIN,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -13,29 +7,27 @@ function corsHeaders(env: Env): Record<string, string> {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request, env) {
     const url = new URL(request.url);
-    const { method, pathname } = { method: request.method, pathname: url.pathname };
+    const method = request.method;
+    const pathname = url.pathname;
 
-    // Preflight
     if (method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(env) });
     }
 
-    // Health check
     if (method === "GET" && pathname === "/health") {
       return Response.json({ status: "ok" }, { headers: corsHeaders(env) });
     }
 
-    // Token exchange
     if (method === "POST" && pathname === "/api/auth/callback") {
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
-      const code = body.code as string | undefined;
+      const body = await request.json().catch(() => ({}));
+      const code = body.code;
 
       if (!code) {
         return Response.json(
           { error: "Missing authorization code" },
-          { status: 400, headers: corsHeaders(env) },
+          { status: 400, headers: corsHeaders(env) }
         );
       }
 
@@ -52,22 +44,21 @@ export default {
         }),
       });
 
-      const tokenData = (await tokenResponse.json()) as Record<string, unknown>;
+      const tokenData = await tokenResponse.json();
 
       if (tokenData.error) {
         return Response.json(
           { error: tokenData.error, error_description: tokenData.error_description },
-          { status: 400, headers: corsHeaders(env) },
+          { status: 400, headers: corsHeaders(env) }
         );
       }
 
       return Response.json(
         { access_token: tokenData.access_token },
-        { headers: corsHeaders(env) },
+        { headers: corsHeaders(env) }
       );
     }
 
-    // Not found
     return Response.json({ error: "Not found" }, { status: 404, headers: corsHeaders(env) });
   },
 };

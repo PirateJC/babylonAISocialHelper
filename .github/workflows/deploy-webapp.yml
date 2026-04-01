@@ -35,7 +35,7 @@ jobs:
 
       - run: npm run build -w webapp
         env:
-          VITE_GITHUB_CLIENT_ID: ${{ vars.GITHUB_CLIENT_ID }}
+          VITE_GITHUB_CLIENT_ID: ${{ vars.OAUTH_CLIENT_ID }}
           VITE_OAUTH_WORKER_URL: ${{ vars.OAUTH_WORKER_URL }}
           VITE_REPO_OWNER: ${{ vars.REPO_OWNER }}
           VITE_REPO_NAME: ${{ vars.REPO_NAME }}
