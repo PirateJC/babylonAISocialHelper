@@ -1,4 +1,5 @@
 import type { Post } from "../types/post.ts";
+import BabylonLogo from "./BabylonLogo.tsx";
 
 /* ── styles ─────────────────────────────────────────────── */
 
@@ -20,13 +21,10 @@ const avatar: React.CSSProperties = {
   width: 40,
   height: 40,
   borderRadius: "50%",
-  background: "linear-gradient(135deg, #e44d26, #bb381a)",
+  background: "#1a1a2e",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  color: "#fff",
-  fontWeight: 800,
-  fontSize: 18,
 };
 
 const imageStyle: React.CSSProperties = {
@@ -89,7 +87,9 @@ export default function PostPreview({ post }: PostPreviewProps) {
     <div style={card}>
       {/* Header */}
       <div style={headerStyle}>
-        <div style={avatar}>B</div>
+        <div style={avatar}>
+          <BabylonLogo size={26} />
+        </div>
         <div>
           <div style={{ fontWeight: 700, fontSize: 15 }}>Babylon.js</div>
           <div style={{ fontSize: 12, color: "#6b7280" }}>@babylonjs</div>
@@ -107,17 +107,6 @@ export default function PostPreview({ post }: PostPreviewProps) {
       >
         {post.text}
       </p>
-
-      {/* Image */}
-      {post.localImageData ? (
-        <img
-          src={post.localImageData}
-          alt="Post screenshot"
-          style={imageStyle}
-        />
-      ) : (
-        <div style={imagePlaceholder}>📷 Screenshot preview</div>
-      )}
 
       {/* Link card */}
       {post.link?.url && (
@@ -145,6 +134,17 @@ export default function PostPreview({ post }: PostPreviewProps) {
             .map((h) => (h.startsWith("#") ? h : `#${h}`))
             .join(" ")}
         </div>
+      )}
+
+      {/* Image */}
+      {post.localImageData ? (
+        <img
+          src={post.localImageData}
+          alt="Post screenshot"
+          style={{ ...imageStyle, marginTop: 12 }}
+        />
+      ) : (
+        <div style={{ ...imagePlaceholder, marginTop: 12 }}>📷 Screenshot preview</div>
       )}
 
       {/* Engagement bar */}

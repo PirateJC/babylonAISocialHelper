@@ -1,4 +1,5 @@
 import { useAuth } from "../context/AuthContext.tsx";
+import BabylonLogo from "./BabylonLogo.tsx";
 
 const nav: React.CSSProperties = {
   display: "flex",
@@ -61,16 +62,7 @@ export default function Navbar() {
   return (
     <nav style={nav}>
       <a href="#/posts" style={brand}>
-        {/* Babylon.js logo — simplified SVG mark */}
-        <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
-          <circle cx="50" cy="50" r="46" stroke="#e0684b" strokeWidth="6" />
-          <polygon
-            points="50,18 78,68 22,68"
-            fill="none"
-            stroke="#e0684b"
-            strokeWidth="5"
-          />
-        </svg>
+        <BabylonLogo size={28} />
         Social Helper
       </a>
 
