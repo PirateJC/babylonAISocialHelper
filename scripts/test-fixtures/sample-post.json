@@ -1,0 +1,27 @@
+{
+  "id": "post-test-001",
+  "assignedDate": "2099-12-31",
+  "category": "feature-highlight",
+  "text": "Babylon.js Node Material Editor lets you create complex shaders visually — no code required!",
+  "hashtags": ["#3D", "#WebDev", "#gamedev", "#indiedev", "#WebDevelopment", "#webgl", "#gamedevelopment", "#IndieDevs"],
+  "conditionalHashtags": [],
+  "link": {
+    "url": "https://nme.babylonjs.com",
+    "type": "demo",
+    "title": "Node Material Editor"
+  },
+  "media": {
+    "type": "screenshot",
+    "sourceUrl": "https://nme.babylonjs.com",
+    "description": "The Babylon.js Node Material Editor interface",
+    "filePath": "media/post-test-001.png"
+  },
+  "metadata": {
+    "topic": "Node Material Editor",
+    "babylonFeatureArea": "Materials",
+    "contentSource": "https://doc.babylonjs.com/features/featuresDeepDive/materials/node_material",
+    "usesEmoji": false,
+    "postFormat": "feature-statement",
+    "dayIndex": 1
+  }
+}
