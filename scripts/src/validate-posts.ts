@@ -129,7 +129,7 @@ function checkHashtagRules(data: PostsFile): CheckResult {
     if (p.hashtags.length < 8) {
       errors.push(`${p.id}: only ${p.hashtags.length} hashtags (need ≥8)`);
     }
-    const hasBuiltWith = p.hashtags.includes("#BuiltWithBabylon");
+    const hasBuiltWith = p.conditionalHashtags.includes("#BuiltWithBabylon");
     if (hasBuiltWith && p.category !== "community-demo") {
       errors.push(`${p.id}: #BuiltWithBabylon on non-community-demo post`);
     }
