@@ -1,3 +1,10 @@
 name = "babylon-social-auth"
 main = "src/index.ts"
 compatibility_date = "2026-04-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://babylonjs.github.io"
+
+# Secrets (set via wrangler secret put):
+# GITHUB_CLIENT_ID
+# GITHUB_CLIENT_SECRET
