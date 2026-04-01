@@ -48,33 +48,7 @@ const imagePlaceholder: React.CSSProperties = {
   border: "1px solid #e5e7eb",
 };
 
-const linkCardStyle: React.CSSProperties = {
-  border: "1px solid #e5e7eb",
-  borderRadius: 12,
-  padding: "10px 14px",
-  marginTop: 8,
-  background: "#f9fafb",
-};
-
-const engagementBar: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-around",
-  marginTop: 14,
-  paddingTop: 10,
-  borderTop: "1px solid #f3f4f6",
-  fontSize: 13,
-  color: "#6b7280",
-};
-
 /* ── helpers ─────────────────────────────────────────────── */
-
-function extractDomain(url: string): string {
-  try {
-    return new URL(url).hostname;
-  } catch {
-    return url;
-  }
-}
 
 /* ── component ───────────────────────────────────────────── */
 
@@ -108,15 +82,17 @@ export default function PostPreview({ post }: PostPreviewProps) {
         {post.text}
       </p>
 
-      {/* Link card */}
+      {/* Link */}
       {post.link?.url && (
-        <div style={linkCardStyle}>
-          <div style={{ fontSize: 12, color: "#6b7280" }}>
-            {extractDomain(post.link.url)}
-          </div>
-          <div style={{ fontSize: 14, fontWeight: 600, marginTop: 2 }}>
-            {post.link.title || post.link.url}
-          </div>
+        <div style={{ marginTop: 8 }}>
+          <a
+            href={post.link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 14, color: "#2563eb", textDecoration: "none" }}
+          >
+            {post.link.url}
+          </a>
         </div>
       )}
 
@@ -146,28 +122,6 @@ export default function PostPreview({ post }: PostPreviewProps) {
       ) : (
         <div style={{ ...imagePlaceholder, marginTop: 12 }}>📷 Screenshot preview</div>
       )}
-
-      {/* Engagement bar */}
-      <div style={engagementBar}>
-        <span>💬 0</span>
-        <span>🔁 0</span>
-        <span>❤️ 0</span>
-        <span>📊 0</span>
-      </div>
-
-      {/* Note */}
-      <p
-        style={{
-          fontSize: 11,
-          color: "#9ca3af",
-          marginTop: 12,
-          fontStyle: "italic",
-          textAlign: "center",
-        }}
-      >
-        Generic preview. Platform-specific previews (X, LinkedIn, Bluesky)
-        planned for a future release.
-      </p>
     </div>
   );
 }
