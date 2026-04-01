@@ -1,0 +1,91 @@
+# Daily Social Media Post
+#
+# Posts one scheduled Babylon.js social media update to X, LinkedIn, and Bluesky.
+# Runs at 10:00 AM Pacific Time daily (DST-aware via dual cron triggers).
+# The orchestrator self-gates on Pacific time to prevent double-posting.
+#
+# Required GitHub Secrets:
+# - X_USERNAME:              X (Twitter) account username
+# - X_PASSWORD:              X (Twitter) account password
+# - X_EMAIL:                 X (Twitter) account email (for 2FA)
+# - LINKEDIN_ACCESS_TOKEN:   LinkedIn OAuth 2.0 access token
+# - LINKEDIN_REFRESH_TOKEN:  LinkedIn OAuth 2.0 refresh token
+# - LINKEDIN_CLIENT_ID:      LinkedIn app client ID (for token refresh)
+# - LINKEDIN_CLIENT_SECRET:  LinkedIn app client secret (for token refresh)
+# - LINKEDIN_ORGANIZATION_ID: LinkedIn company page org ID (90520614)
+# - BLUESKY_HANDLE:          Bluesky handle (babylonjs.bsky.social)
+# - BLUESKY_APP_PASSWORD:    Bluesky app password
+# - GH_TOKEN_SECRETS_WRITE:  GitHub PAT with repo secrets write permission
+
+name: Daily Social Media Post
+
+on:
+  schedule:
+    - cron: '0 17 * * *'  # 17:00 UTC = 10:00 AM PDT (summer)
+    - cron: '0 18 * * *'  # 18:00 UTC = 10:00 AM PST (winter)
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Override date (YYYY-MM-DD) for manual posting'
+        required: false
+        type: string
+      dry_run:
+        description: 'Dry run (skip actual posting and git push)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-posting
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN_SECRETS_WRITE || github.token }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Post to social media
+        env:
+          X_USERNAME: ${{ secrets.X_USERNAME }}
+          X_PASSWORD: ${{ secrets.X_PASSWORD }}
+          X_EMAIL: ${{ secrets.X_EMAIL }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_REFRESH_TOKEN: ${{ secrets.LINKEDIN_REFRESH_TOKEN }}
+          LINKEDIN_CLIENT_ID: ${{ secrets.LINKEDIN_CLIENT_ID }}
+          LINKEDIN_CLIENT_SECRET: ${{ secrets.LINKEDIN_CLIENT_SECRET }}
+          LINKEDIN_ORGANIZATION_ID: ${{ secrets.LINKEDIN_ORGANIZATION_ID }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          GH_TOKEN_SECRETS_WRITE: ${{ secrets.GH_TOKEN_SECRETS_WRITE }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" == "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          if [ -n "${{ inputs.date }}" ]; then
+            ARGS="$ARGS --date ${{ inputs.date }}"
+          fi
+          npx tsx scripts/src/post-daily.ts $ARGS
