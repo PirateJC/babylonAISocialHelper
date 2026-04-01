@@ -1,0 +1,150 @@
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
+
+const postsSchema = {
+  $schema: "http://json-schema.org/draft-07/schema#",
+  title: "Babylon.js Social Media Posts",
+  type: "object",
+  required: ["generatedAt", "generatedBy", "totalPosts", "config", "posts"],
+  properties: {
+    generatedAt: { type: "string", format: "date-time" },
+    generatedBy: { type: "string", const: "Babylon.js Social Media Agent" },
+    totalPosts: { type: "integer", minimum: 1 },
+    config: {
+      type: "object",
+      required: [
+        "daysRequested",
+        "contentMix",
+        "emojiRate",
+        "postingTime",
+        "platforms",
+      ],
+      properties: {
+        daysRequested: { type: "integer", minimum: 1 },
+        contentMix: {
+          type: "object",
+          required: ["featureHighlights", "communityDemos", "docsTutorials"],
+          properties: {
+            featureHighlights: { type: "number", minimum: 0, maximum: 1 },
+            communityDemos: { type: "number", minimum: 0, maximum: 1 },
+            docsTutorials: { type: "number", minimum: 0, maximum: 1 },
+          },
+        },
+        emojiRate: { type: "number", minimum: 0, maximum: 1 },
+        postingTime: { type: "string" },
+        platforms: {
+          type: "array",
+          items: { type: "string", enum: ["x", "linkedin", "bluesky"] },
+        },
+      },
+    },
+    posts: {
+      type: "array",
+      items: {
+        type: "object",
+        required: [
+          "id",
+          "category",
+          "text",
+          "hashtags",
+          "conditionalHashtags",
+          "link",
+          "media",
+          "metadata",
+        ],
+        properties: {
+          id: { type: "string", pattern: "^post-\\d{3,}$" },
+          category: {
+            type: "string",
+            enum: ["feature-highlight", "community-demo", "docs-tutorial"],
+          },
+          text: { type: "string", minLength: 1 },
+          hashtags: { type: "array", items: { type: "string" }, minItems: 8 },
+          conditionalHashtags: { type: "array", items: { type: "string" } },
+          link: {
+            type: "object",
+            required: ["url", "type", "title"],
+            properties: {
+              url: { type: "string", format: "uri" },
+              type: {
+                type: "string",
+                enum: [
+                  "playground",
+                  "demo",
+                  "docs",
+                  "forum",
+                  "blog",
+                  "community-project",
+                  "youtube",
+                ],
+              },
+              title: { type: "string" },
+            },
+          },
+          media: {
+            type: "object",
+            required: ["type", "sourceUrl", "description", "filePath"],
+            properties: {
+              type: { type: "string", const: "screenshot" },
+              sourceUrl: { type: "string", format: "uri" },
+              description: { type: "string", minLength: 1 },
+              filePath: {
+                type: "string",
+                pattern: "^media/post-\\d{3,}\\.png$",
+              },
+            },
+          },
+          metadata: {
+            type: "object",
+            required: [
+              "topic",
+              "babylonFeatureArea",
+              "contentSource",
+              "usesEmoji",
+              "postFormat",
+              "dayIndex",
+            ],
+            properties: {
+              topic: { type: "string" },
+              babylonFeatureArea: { type: "string" },
+              contentSource: { type: "string", format: "uri" },
+              usesEmoji: { type: "boolean" },
+              postFormat: {
+                type: "string",
+                enum: [
+                  "feature-statement",
+                  "question",
+                  "check-out",
+                  "demo-showcase",
+                  "community-pride",
+                  "call-to-action",
+                ],
+              },
+              dayIndex: { type: "integer", minimum: 1 },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
+const ajv = new Ajv({ allErrors: true });
+addFormats(ajv);
+const validate = ajv.compile(postsSchema);
+
+export function validatePostsJson(data: unknown): {
+  valid: boolean;
+  errors: string[];
+} {
+  const isValid = validate(data);
+  if (isValid) return { valid: true, errors: [] };
+
+  const errors = (validate.errors ?? []).map((err) => {
+    const path = err.instancePath || "/";
+    const msg = err.message ?? "unknown error";
+    return `${path}: ${msg}`;
+  });
+
+  return { valid: false, errors };
+}

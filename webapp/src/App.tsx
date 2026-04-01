@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext.tsx";
+import { PostsProvider } from "./context/PostsContext.tsx";
 import Navbar from "./components/Navbar.tsx";
 import LoginScreen from "./components/LoginScreen.tsx";
 import AccessDenied from "./components/AccessDenied.tsx";
@@ -22,15 +23,17 @@ function AuthenticatedApp() {
   if (!isTeamMember) return <AccessDenied />;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fff" }}>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Navigate to="/posts" replace />} />
-        <Route path="/import" element={<ImportPanel />} />
-        <Route path="/posts" element={<PostList />} />
-        <Route path="/posts/:id" element={<PostDetail />} />
-      </Routes>
-    </div>
+    <PostsProvider>
+      <div style={{ minHeight: "100vh", background: "#fff" }}>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Navigate to="/posts" replace />} />
+          <Route path="/import" element={<ImportPanel />} />
+          <Route path="/posts" element={<PostList />} />
+          <Route path="/posts/:id" element={<PostDetail />} />
+        </Routes>
+      </div>
+    </PostsProvider>
   );
 }
 
