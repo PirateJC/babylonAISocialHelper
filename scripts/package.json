@@ -1,0 +1,21 @@
+{
+  "name": "babylon-social-scripts",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/post-daily.ts",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "agent-twitter-client": "^0.0.18",
+    "@atproto/api": "^0.13.0",
+    "@octokit/rest": "^21.0.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.0",
+    "tsx": "^4.19.0",
+    "@types/node": "^22.0.0"
+  }
+}

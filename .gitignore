@@ -1,0 +1,7 @@
+node_modules/
+dist/
+skills/
+.env
+*.local
+.wrangler/
+output/

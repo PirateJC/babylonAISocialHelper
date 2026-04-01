@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "workspaces": ["webapp", "scripts", "oauth-worker"],
+  "engines": {
+    "node": ">=18"
+  }
+}

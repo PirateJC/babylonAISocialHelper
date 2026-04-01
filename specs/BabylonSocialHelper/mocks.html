@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Babylon.js Social Helper — UI Mocks</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; line-height: 1.5; }
+
+  /* ── Mock Container ── */
+  .mock-section { max-width: 1200px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.08); overflow: hidden; }
+  .mock-label { background: #e74c3c; color: #fff; padding: 12px 24px; font-size: 14px; font-weight: 600; letter-spacing: .5px; }
+  .mock-label span { opacity: .7; font-weight: 400; margin-left: 8px; }
+  .mock-body { padding: 0; }
+
+  /* ── Navbar ── */
+  .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #1a1a2e; color: #fff; }
+  .navbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+  .navbar-right { display: flex; align-items: center; gap: 16px; }
+  .navbar-right .avatar { width: 32px; height: 32px; border-radius: 50%; background: #e74c3c; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; }
+  .navbar-right .username { font-size: 14px; opacity: .8; }
+
+  /* ── Login Screen ── */
+  .login-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 500px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: #fff; text-align: center; padding: 40px; }
+  .login-logo { margin-bottom: 8px; }
+  .login-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .login-subtitle { font-size: 16px; opacity: .7; margin-bottom: 32px; max-width: 400px; }
+  .btn-github { display: inline-flex; align-items: center; gap: 10px; background: #fff; color: #1a1a1a; padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; border: none; cursor: pointer; transition: transform .15s; }
+  .btn-github:hover { transform: translateY(-1px); }
+  .btn-github svg { width: 24px; height: 24px; }
+  .login-note { font-size: 13px; opacity: .5; margin-top: 16px; }
+
+  /* ── Access Denied ── */
+  .access-denied { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; text-align: center; padding: 40px; }
+  .access-denied .icon { font-size: 64px; margin-bottom: 16px; }
+  .access-denied h2 { font-size: 24px; margin-bottom: 8px; }
+  .access-denied p { color: #666; max-width: 400px; }
+
+  /* ── Toolbar ── */
+  .toolbar { display: flex; align-items: center; gap: 12px; padding: 16px 24px; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+  .toolbar-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+  .toolbar-right { display: flex; align-items: center; gap: 8px; }
+
+  /* ── Filters ── */
+  select, input[type="date"], input[type="text"], input[type="file"] {
+    padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: #fff;
+  }
+  select:focus, input:focus { outline: none; border-color: #e74c3c; }
+
+  /* ── Buttons ── */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all .15s; }
+  .btn-primary { background: #e74c3c; color: #fff; }
+  .btn-primary:hover { background: #c0392b; }
+  .btn-secondary { background: #f0f0f0; color: #333; }
+  .btn-secondary:hover { background: #e0e0e0; }
+  .btn-success { background: #27ae60; color: #fff; }
+  .btn-success:hover { background: #219a52; }
+  .btn-danger { background: #e74c3c; color: #fff; }
+  .btn-danger:hover { background: #c0392b; }
+  .btn-outline { background: transparent; border: 1px solid #ddd; color: #333; }
+  .btn-outline:hover { border-color: #999; }
+  .btn-sm { padding: 6px 12px; font-size: 13px; }
+  .btn-lg { padding: 12px 24px; font-size: 16px; }
+
+  /* ── Batch Action Bar ── */
+  .batch-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #1a1a2e; color: #fff; font-size: 14px; }
+  .batch-bar .actions { display: flex; gap: 8px; }
+
+  /* ── Post List ── */
+  .post-list { padding: 0; }
+  .post-row { display: grid; grid-template-columns: 40px 80px 100px 1fr 120px 100px 120px; align-items: center; gap: 12px; padding: 14px 24px; border-bottom: 1px solid #f0f0f0; transition: background .1s; }
+  .post-row:hover { background: #fafafa; }
+  .post-row.header { font-weight: 600; font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: .5px; background: #fafafa; border-bottom: 2px solid #eee; }
+  .post-row.header:hover { background: #fafafa; }
+
+  .post-checkbox { width: 18px; height: 18px; accent-color: #e74c3c; cursor: pointer; }
+  .post-thumb { width: 64px; height: 48px; border-radius: 6px; object-fit: cover; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .post-date { font-size: 13px; color: #666; font-variant-numeric: tabular-nums; }
+  .post-text { font-size: 14px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .post-link { font-size: 12px; color: #2980b9; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ── Badges ── */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; letter-spacing: .3px; }
+  .badge-feature { background: #ebf5fb; color: #2980b9; }
+  .badge-community { background: #fef9e7; color: #d68910; }
+  .badge-docs { background: #eafaf1; color: #27ae60; }
+  .badge-draft { background: #f0f0f0; color: #666; }
+  .badge-scheduled { background: #eafaf1; color: #27ae60; }
+  .badge-failed { background: #fdedec; color: #e74c3c; }
+
+  /* ── Import Panel ── */
+  .import-panel { padding: 32px; text-align: center; border: 2px dashed #ddd; border-radius: 12px; margin: 24px; }
+  .import-panel .icon { font-size: 48px; margin-bottom: 12px; }
+  .import-panel h3 { font-size: 18px; margin-bottom: 4px; }
+  .import-panel p { color: #888; font-size: 14px; margin-bottom: 16px; }
+
+  /* ── Import Summary ── */
+  .import-summary { padding: 24px; margin: 24px; background: #f8f9fa; border-radius: 8px; }
+  .import-summary h3 { font-size: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .import-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+  .stat-card { background: #fff; border-radius: 8px; padding: 16px; text-align: center; border: 1px solid #eee; }
+  .stat-card .number { font-size: 28px; font-weight: 700; color: #e74c3c; }
+  .stat-card .label { font-size: 12px; color: #888; margin-top: 4px; }
+  .date-range { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #fff; border-radius: 8px; border: 1px solid #eee; margin-bottom: 16px; font-size: 14px; }
+
+  /* ── Post Detail ── */
+  .post-detail { display: grid; grid-template-columns: 1fr 380px; gap: 24px; padding: 24px; }
+  .post-detail-left { }
+  .post-detail-right { }
+
+  .detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .detail-header h2 { font-size: 20px; }
+
+  .field-group { margin-bottom: 20px; }
+  .field-label { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .field-value { font-size: 14px; color: #333; }
+  textarea.field-edit { width: 100%; min-height: 100px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; line-height: 1.6; }
+  input.field-edit { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+
+  /* ── Generic Preview Card ── */
+  .preview-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; }
+  .preview-header { display: flex; align-items: center; gap: 10px; padding: 14px 16px; }
+  .preview-avatar { width: 40px; height: 40px; border-radius: 50%; background: #e74c3c; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .preview-avatar svg { width: 40px; height: 40px; }
+  .navbar-brand svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .login-logo svg { width: 80px; height: 80px; }
+  .preview-name { font-weight: 700; font-size: 14px; }
+  .preview-handle { font-size: 13px; color: #888; }
+  .preview-body { padding: 0 16px 12px; font-size: 15px; line-height: 1.5; }
+  .preview-image { width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; }
+  .preview-link-card { margin: 12px 16px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+  .preview-link-card .link-domain { padding: 10px 12px; font-size: 12px; color: #888; }
+  .preview-link-card .link-title { padding: 0 12px 10px; font-size: 14px; font-weight: 500; }
+  .preview-hashtags { padding: 8px 16px 14px; font-size: 13px; color: #2980b9; line-height: 1.8; }
+  .preview-footer { display: flex; justify-content: space-around; padding: 10px 16px; border-top: 1px solid #f0f0f0; }
+  .preview-footer span { font-size: 13px; color: #888; }
+
+  /* ── Failed Post Detail ── */
+  .platform-status { margin: 16px 0; }
+  .platform-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; }
+  .platform-row .name { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .platform-row .status-ok { color: #27ae60; }
+  .platform-row .status-fail { color: #e74c3c; }
+  .platform-row .error-msg { font-size: 12px; color: #e74c3c; }
+
+  /* ── Metadata Tags ── */
+  .meta-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .meta-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #f0f0f0; border-radius: 6px; font-size: 12px; color: #666; }
+
+  /* ── Delete Confirmation Modal ── */
+  .modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 10; }
+  .modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 420px; width: 100%; text-align: center; }
+  .modal h3 { margin-bottom: 8px; }
+  .modal p { color: #666; font-size: 14px; margin-bottom: 20px; }
+  .modal .actions { display: flex; gap: 12px; justify-content: center; }
+
+  /* ── Section Divider ── */
+  .section-divider { height: 60px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; }
+
+  /* ── Helpers ── */
+  .flex { display: flex; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .items-center { align-items: center; }
+  .text-muted { color: #888; }
+  .text-sm { font-size: 13px; }
+  .mt-8 { margin-top: 8px; }
+  .mb-16 { margin-bottom: 16px; }
+  .relative { position: relative; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 1: LOGIN SCREEN                                                   -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 1: Login Screen <span>— GitHub OAuth authentication before accessing the app</span></div>
+  <div class="mock-body">
+    <div class="login-container">
+      <div class="login-logo"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg></div>
+      <div class="login-title">Babylon.js Social Helper</div>
+      <div class="login-subtitle">Review, edit, and approve social media posts for the Babylon.js community</div>
+      <button class="btn-github">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        Sign in with GitHub
+      </button>
+      <div class="login-note">Requires membership in BabylonJS/core-team-microsoft</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 2: ACCESS DENIED                                                  -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 2: Access Denied <span>— Shown when authenticated user is not a BabylonJS core team member</span></div>
+  <div class="mock-body">
+    <div class="navbar">
+      <div class="navbar-brand"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg> Babylon.js Social Helper</div>
+      <div class="navbar-right">
+        <span class="username">@randomuser</span>
+        <div class="avatar">R</div>
+      </div>
+    </div>
+    <div class="access-denied">
+      <div class="icon">🔒</div>
+      <h2>Access Denied</h2>
+      <p>Your GitHub account is not a member of the <strong>BabylonJS/core-team-microsoft</strong> team. Contact a team admin for access.</p>
+      <button class="btn btn-secondary" style="margin-top:16px">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 3: IMPORT — UPLOAD JSON                                           -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 3: Import — Upload JSON <span>— Drop zone for importing the Phase 1 posts.json file</span></div>
+  <div class="mock-body">
+    <div class="navbar">
+      <div class="navbar-brand"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg> Babylon.js Social Helper</div>
+      <div class="navbar-right">
+        <span class="username">@AmazonJax</span>
+        <div class="avatar">J</div>
+      </div>
+    </div>
+    <div class="import-panel">
+      <div class="icon">📁</div>
+      <h3>Import Posts</h3>
+      <p>Drag and drop your posts.json file here, or click to browse</p>
+      <button class="btn btn-primary btn-lg">Choose File</button>
+      <div class="text-sm text-muted mt-8">Accepted: .json files generated by the content-generation skill</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 4: IMPORT — SUMMARY & DATE ASSIGNMENT                             -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 4: Import — Summary & Date Assignment <span>— After uploading, shows auto-assigned dates and batch stats</span></div>
+  <div class="mock-body">
+    <div class="navbar">
+      <div class="navbar-brand"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg> Babylon.js Social Helper</div>
+      <div class="navbar-right">
+        <span class="username">@AmazonJax</span>
+        <div class="avatar">J</div>
+      </div>
+    </div>
+    <div class="import-summary">
+      <h3>✅ Import Complete — 30 posts loaded</h3>
+      <div class="import-stats">
+        <div class="stat-card">
+          <div class="number">30</div>
+          <div class="label">Total Posts</div>
+        </div>
+        <div class="stat-card">
+          <div class="number">12</div>
+          <div class="label">Feature Highlights</div>
+        </div>
+        <div class="stat-card">
+          <div class="number">6</div>
+          <div class="label">Community Demos</div>
+        </div>
+        <div class="stat-card">
+          <div class="number">12</div>
+          <div class="label">Docs & Tutorials</div>
+        </div>
+      </div>
+      <div class="date-range">
+        📅 <strong>Date range:</strong>&nbsp; Apr 17, 2026 → May 16, 2026 &nbsp;·&nbsp; <span class="text-muted">Last scheduled post in repo: Apr 16, 2026</span>
+      </div>
+      <div style="display:flex; gap:12px;">
+        <button class="btn btn-success btn-lg">Review Posts</button>
+        <button class="btn btn-outline">Re-import</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 5: POST LIST VIEW — DRAFTS WITH BATCH SELECT                      -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 5: Post List — Drafts <span>— Imported posts as drafts with batch selection and filtering</span></div>
+  <div class="mock-body">
+    <div class="navbar">
+      <div class="navbar-brand"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg> Babylon.js Social Helper</div>
+      <div class="navbar-right">
+        <button class="btn btn-primary btn-sm">Import Posts</button>
+        <span class="username">@AmazonJax</span>
+        <div class="avatar">J</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <select>
+          <option selected>All Statuses</option>
+          <option>Draft</option>
+          <option>Scheduled</option>
+          <option>Failed</option>
+        </select>
+        <select>
+          <option selected>All Categories</option>
+          <option>Feature Highlight</option>
+          <option>Community Demo</option>
+          <option>Docs & Tutorial</option>
+        </select>
+        <input type="date" value="2026-04-17" style="width:140px">
+        <span class="text-muted">to</span>
+        <input type="date" value="2026-05-16" style="width:140px">
+      </div>
+      <div class="toolbar-right">
+        <span class="text-sm text-muted">30 posts</span>
+      </div>
+    </div>
+
+    <!-- Batch Action Bar (visible when items selected) -->
+    <div class="batch-bar">
+      <span><strong>3</strong> posts selected</span>
+      <div class="actions">
+        <button class="btn btn-success btn-sm">✓ Approve Selected</button>
+        <button class="btn btn-danger btn-sm">✕ Delete Selected</button>
+        <button class="btn btn-outline btn-sm" style="color:#fff; border-color:rgba(255,255,255,.3)">Clear Selection</button>
+      </div>
+    </div>
+
+    <!-- Post List -->
+    <div class="post-list">
+      <div class="post-row header">
+        <input type="checkbox" class="post-checkbox">
+        <span>Image</span>
+        <span>Date</span>
+        <span>Post</span>
+        <span>Category</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox" checked>
+        <div class="post-thumb">🏔️</div>
+        <div class="post-date">Apr 17, 2026</div>
+        <div class="post-text">Babylon.js Node Material Editor lets you create complex shaders visually — no code required! It's WAY easier than writing GLSL!!</div>
+        <span class="badge badge-feature">Feature</span>
+        <span class="badge badge-draft">Draft</span>
+        <div><button class="btn btn-success btn-sm">Approve</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox" checked>
+        <div class="post-thumb">🎮</div>
+        <div class="post-date">Apr 18, 2026</div>
+        <div class="post-text">Check out this AMAZING multiplayer game built with Babylon.js! The community continues to blow us away!! 😍😍</div>
+        <span class="badge badge-community">Community</span>
+        <span class="badge badge-draft">Draft</span>
+        <div><button class="btn btn-success btn-sm">Approve</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox" checked>
+        <div class="post-thumb">📖</div>
+        <div class="post-date">Apr 19, 2026</div>
+        <div class="post-text">Did you know you can add realistic physics to your Babylon.js scenes with just a few lines of code? The physics engine is SOOO smooth!</div>
+        <span class="badge badge-docs">Docs</span>
+        <span class="badge badge-draft">Draft</span>
+        <div><button class="btn btn-success btn-sm">Approve</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox">
+        <div class="post-thumb">✨</div>
+        <div class="post-date">Apr 20, 2026</div>
+        <div class="post-text">Babylon.js 9.0 brings Clustered Lighting — a SUPER efficient way to add many lights to your scenes! 🤯🤯🤯</div>
+        <span class="badge badge-feature">Feature</span>
+        <span class="badge badge-draft">Draft</span>
+        <div><button class="btn btn-success btn-sm">Approve</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox">
+        <div class="post-thumb">🚀</div>
+        <div class="post-date">Apr 21, 2026</div>
+        <div class="post-text">Want to level up your 3D web skills? Start with the Babylon.js docs — the BEST place to learn!</div>
+        <span class="badge badge-docs">Docs</span>
+        <span class="badge badge-draft">Draft</span>
+        <div><button class="btn btn-success btn-sm">Approve</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox">
+        <div class="post-thumb">🌐</div>
+        <div class="post-date">Apr 22, 2026</div>
+        <div class="post-text">The Babylon platform is (and will always be) open source. It belongs to all of us. So why not join us in making it better!</div>
+        <span class="badge badge-feature">Feature</span>
+        <span class="badge badge-draft">Draft</span>
+        <div><button class="btn btn-success btn-sm">Approve</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 6: POST LIST — MIXED STATUSES                                     -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 6: Post List — Mixed Statuses <span>— Shows Scheduled and Failed posts alongside Drafts</span></div>
+  <div class="mock-body">
+    <div class="navbar">
+      <div class="navbar-brand"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg> Babylon.js Social Helper</div>
+      <div class="navbar-right">
+        <button class="btn btn-primary btn-sm">Import Posts</button>
+        <span class="username">@AmazonJax</span>
+        <div class="avatar">J</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <select>
+          <option selected>All Statuses</option>
+        </select>
+        <select>
+          <option selected>All Categories</option>
+        </select>
+        <input type="date" value="2026-04-01" style="width:140px">
+        <span class="text-muted">to</span>
+        <input type="date" value="2026-04-30" style="width:140px">
+      </div>
+      <div class="toolbar-right">
+        <span class="text-sm text-muted">6 posts</span>
+      </div>
+    </div>
+
+    <div class="post-list">
+      <div class="post-row header">
+        <input type="checkbox" class="post-checkbox">
+        <span>Image</span>
+        <span>Date</span>
+        <span>Post</span>
+        <span>Category</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
+
+      <div class="post-row" style="background:#fdedec">
+        <input type="checkbox" class="post-checkbox">
+        <div class="post-thumb">🏔️</div>
+        <div class="post-date">Apr 10, 2026</div>
+        <div class="post-text">Babylon.js WebXR support makes building VR experiences SO easy!! Just a few lines and you're in VR!</div>
+        <span class="badge badge-feature">Feature</span>
+        <span class="badge badge-failed">Failed</span>
+        <div><button class="btn btn-outline btn-sm">Retry</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox">
+        <div class="post-thumb">🎨</div>
+        <div class="post-date">Apr 15, 2026</div>
+        <div class="post-text">Check out the GUI Editor — design your entire 2D UI visually and export it straight into your scene!!</div>
+        <span class="badge badge-docs">Docs</span>
+        <span class="badge badge-scheduled">Scheduled</span>
+        <div><button class="btn btn-outline btn-sm">Edit</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox">
+        <div class="post-thumb">🎮</div>
+        <div class="post-date">Apr 16, 2026</div>
+        <div class="post-text">This Babylon.js powered racing game by the community is INCREDIBLE!! The graphics are unreal 😍</div>
+        <span class="badge badge-community">Community</span>
+        <span class="badge badge-scheduled">Scheduled</span>
+        <div><button class="btn btn-outline btn-sm">Edit</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox">
+        <div class="post-thumb">📖</div>
+        <div class="post-date">Apr 17, 2026</div>
+        <div class="post-text">Did you know Babylon.js has a built-in particle system? Create fire, smoke, rain — you name it!!</div>
+        <span class="badge badge-feature">Feature</span>
+        <span class="badge badge-draft">Draft</span>
+        <div><button class="btn btn-success btn-sm">Approve</button></div>
+      </div>
+
+      <div class="post-row">
+        <input type="checkbox" class="post-checkbox">
+        <div class="post-thumb">🔥</div>
+        <div class="post-date">Apr 18, 2026</div>
+        <div class="post-text">Babylon.js Animation Groups let you orchestrate complex animations with ease — play, pause, blend!</div>
+        <span class="badge badge-docs">Docs</span>
+        <span class="badge badge-draft">Draft</span>
+        <div><button class="btn btn-success btn-sm">Approve</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 7: INDIVIDUAL POST VIEW — DRAFT WITH PREVIEW                      -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 7: Individual Post — Draft Preview & Edit <span>— Full post details with generic preview and editable fields</span></div>
+  <div class="mock-body">
+    <div class="navbar">
+      <div class="navbar-brand"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg> Babylon.js Social Helper</div>
+      <div class="navbar-right">
+        <span class="username">@AmazonJax</span>
+        <div class="avatar">J</div>
+      </div>
+    </div>
+
+    <div style="padding:12px 24px; border-bottom:1px solid #eee; font-size:14px;">
+      <span class="text-muted">← Back to list</span> &nbsp;·&nbsp; <strong>post-012</strong> &nbsp;·&nbsp; <span class="badge badge-feature">Feature Highlight</span> &nbsp;·&nbsp; <span class="badge badge-draft">Draft</span>
+    </div>
+
+    <div class="post-detail">
+      <!-- Left: Editable Fields -->
+      <div class="post-detail-left">
+        <div class="detail-header">
+          <h2>Edit Post</h2>
+          <div class="flex gap-8">
+            <button class="btn btn-success">✓ Approve</button>
+            <button class="btn btn-danger btn-sm">Delete</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Post Text</div>
+          <textarea class="field-edit">Babylon.js Node Material Editor lets you create complex shaders visually — no code required! It's WAY easier than writing GLSL by hand!!</textarea>
+          <div class="text-sm text-muted mt-8">142 / 300 graphemes (body + link)</div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Link URL</div>
+          <input class="field-edit" type="text" value="https://nme.babylonjs.com">
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Link Type</div>
+          <select style="width:100%">
+            <option>playground</option>
+            <option selected>demo</option>
+            <option>docs</option>
+            <option>forum</option>
+            <option>blog</option>
+            <option>community-project</option>
+            <option>youtube</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Scheduled Date</div>
+          <input class="field-edit" type="date" value="2026-04-17">
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Screenshot</div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:120px; height:80px; background:linear-gradient(135deg, #667eea, #764ba2); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px;">NME Preview</div>
+            <div>
+              <button class="btn btn-outline btn-sm">Replace Image</button>
+              <div class="text-sm text-muted mt-8">media/post-012.png</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Metadata</div>
+          <div class="meta-tags">
+            <span class="meta-tag">📌 Node Material Editor</span>
+            <span class="meta-tag">🏷️ Materials</span>
+            <span class="meta-tag">📝 feature-statement</span>
+            <span class="meta-tag">🙂 No emoji</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Hashtags</div>
+          <div class="text-sm" style="color:#2980b9">#3D #WebDev #gamedev #indiedev #WebDevelopment #webgl #gamedevelopment #IndieDevs</div>
+          <div class="text-sm text-muted mt-8">Standard hashtags (auto-appended on X & LinkedIn, skipped on Bluesky)</div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:20px;">
+          <button class="btn btn-primary">Save Changes</button>
+          <button class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Right: Generic Preview -->
+      <div class="post-detail-right">
+        <div class="field-label" style="margin-bottom:12px">Post Preview</div>
+        <div class="preview-card">
+          <div class="preview-header">
+            <div class="preview-avatar">
+              <svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.p1{fill:#fff}.p2{fill:#e0684b}.p3{fill:#bb464b}.p4{fill:#e0ded8}.p5{fill:#d5d2ca}</style></defs><path class="p1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="p2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="p2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="p2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="p3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="p3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="p4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="p5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="p1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg>
+            </div>
+            <div>
+              <div class="preview-name">Babylon.js</div>
+              <div class="preview-handle">@babylonjs</div>
+            </div>
+          </div>
+          <div class="preview-body">
+            Babylon.js Node Material Editor lets you create complex shaders visually — no code required! It's WAY easier than writing GLSL by hand!!
+          </div>
+          <div class="preview-image">
+            <span>🏔️ Node Material Editor — screenshot preview</span>
+          </div>
+          <div class="preview-link-card">
+            <div class="link-domain">🔗 nme.babylonjs.com</div>
+            <div class="link-title">Node Material Editor — visual shader graph editor</div>
+          </div>
+          <div class="preview-hashtags">
+            #3D #WebDev #gamedev #indiedev #WebDevelopment #webgl #gamedevelopment #IndieDevs
+          </div>
+          <div class="preview-footer">
+            <span>💬 Reply</span>
+            <span>🔁 Repost</span>
+            <span>❤️ Like</span>
+            <span>📊 Views</span>
+          </div>
+        </div>
+        <div class="text-sm text-muted mt-8" style="text-align:center">Generic preview · Platform-specific views coming soon</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 8: INDIVIDUAL POST — FAILED POST DETAIL                           -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 8: Failed Post Detail <span>— Shows per-platform posting results with error messages</span></div>
+  <div class="mock-body">
+    <div class="navbar">
+      <div class="navbar-brand"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg> Babylon.js Social Helper</div>
+      <div class="navbar-right">
+        <span class="username">@AmazonJax</span>
+        <div class="avatar">J</div>
+      </div>
+    </div>
+
+    <div style="padding:12px 24px; border-bottom:1px solid #eee; font-size:14px;">
+      <span class="text-muted">← Back to list</span> &nbsp;·&nbsp; <strong>post-005</strong> &nbsp;·&nbsp; <span class="badge badge-feature">Feature Highlight</span> &nbsp;·&nbsp; <span class="badge badge-failed">Failed</span>
+    </div>
+
+    <div style="padding:24px;">
+      <div class="detail-header">
+        <h2>Failed Post — Apr 10, 2026</h2>
+        <div class="flex gap-8">
+          <button class="btn btn-primary">Retry Posting</button>
+          <button class="btn btn-secondary">Edit & Reschedule</button>
+          <button class="btn btn-danger btn-sm">Delete</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Post Text</div>
+        <div class="field-value">Babylon.js WebXR support makes building VR experiences SO easy!! Just a few lines and you're in VR!</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Platform Posting Results</div>
+        <div class="platform-status">
+          <div class="platform-row">
+            <div class="name"><span>𝕏</span> X (Twitter)</div>
+            <div>
+              <span class="status-fail">✕ Failed after 3 retries</span>
+              <div class="error-msg">Error: Rate limit exceeded. Try again in 15 minutes.</div>
+            </div>
+          </div>
+          <div class="platform-row">
+            <div class="name"><span>in</span> LinkedIn</div>
+            <div>
+              <span class="status-ok">✓ Posted successfully</span>
+              <div class="text-sm text-muted">Post ID: urn:li:share:7052398176523</div>
+            </div>
+          </div>
+          <div class="platform-row">
+            <div class="name"><span>🦋</span> Bluesky</div>
+            <div>
+              <span class="status-ok">✓ Posted successfully</span>
+              <div class="text-sm text-muted">URI: at://did:plc:abc123/app.bsky.feed.post/xyz789</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Action Log</div>
+        <div style="background:#f8f9fa; padding:12px; border-radius:8px; font-family:monospace; font-size:12px; color:#666; line-height:1.8;">
+          2026-04-10 18:00:02 UTC — Starting post workflow for scheduled/2026-04-10.json<br>
+          2026-04-10 18:00:03 UTC — LinkedIn: Uploading image... ✓<br>
+          2026-04-10 18:00:04 UTC — LinkedIn: Creating post... ✓<br>
+          2026-04-10 18:00:05 UTC — Bluesky: Uploading blob... ✓<br>
+          2026-04-10 18:00:06 UTC — Bluesky: Creating post... ✓<br>
+          2026-04-10 18:00:07 UTC — X: Logging in... ✓<br>
+          2026-04-10 18:00:08 UTC — X: Posting tweet... ✕ Rate limit (attempt 1/3)<br>
+          2026-04-10 18:00:38 UTC — X: Posting tweet... ✕ Rate limit (attempt 2/3)<br>
+          2026-04-10 18:01:38 UTC — X: Posting tweet... ✕ Rate limit (attempt 3/3)<br>
+          2026-04-10 18:01:38 UTC — Moving to failed/ — X failed after 3 retries
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MOCK 9: DELETE CONFIRMATION MODAL                                       -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="mock-section">
+  <div class="mock-label">MOCK 9: Delete Confirmation <span>— Modal dialog shown when deleting one or more posts</span></div>
+  <div class="mock-body relative" style="min-height:300px;">
+    <div class="navbar" style="opacity:.5">
+      <div class="navbar-brand"><svg viewBox="0 0 444 385" xmlns="http://www.w3.org/2000/svg"><defs><style>.c1{fill:#fff}.c2{fill:#e0684b}.c3{fill:#bb464b}.c4{fill:#e0ded8}.c5{fill:#d5d2ca}</style></defs><path class="c1" d="M221.7,64.82l-110.92,64V256.93L221.7,321l110.92-64V128.85Z"/><polygon class="c2" points="332.62 128.85 297.9 108.81 264.5 128.09 299.22 148.14 332.62 128.85"/><polygon class="c2" points="144.18 148.14 255.09 84.1 221.7 64.81 110.78 128.85 144.18 148.14"/><polygon class="c2" points="186.98 212.94 221.7 232.98 256.41 212.94 221.7 192.89 186.98 212.94"/><polygon class="c3" points="299.22 148.14 299.22 237.65 221.7 282.41 144.18 237.65 144.18 148.14 110.78 128.85 110.78 256.93 221.7 320.97 332.62 256.93 332.62 128.85 299.22 148.14"/><polygon class="c3" points="221.7 152.81 186.98 172.85 186.98 212.94 221.7 192.89 256.41 212.94 256.41 172.85 221.7 152.81"/><polygon class="c4" points="299.22 148.14 256.41 172.85 256.41 212.94 221.7 232.98 221.7 282.41 299.22 237.65 299.22 148.14"/><polygon class="c5" points="144.18 148.14 186.98 172.85 186.98 212.94 221.7 232.98 221.7 282.41 144.18 237.65 144.18 148.14"/><polygon class="c1" points="255.09 84.1 297.9 108.81 264.5 128.09 299.22 148.14 256.41 172.85 221.7 152.81 186.98 172.85 144.18 148.14 255.09 84.1"/></svg> Babylon.js Social Helper</div>
+    </div>
+    <div style="height:200px; background:#f8f8f8; opacity:.3;"></div>
+    <div class="modal-overlay">
+      <div class="modal">
+        <h3>⚠️ Delete 3 posts?</h3>
+        <p>This will permanently remove these posts from your drafts. Posts already committed to <code>scheduled/</code> will also be removed from the repo. This action cannot be undone.</p>
+        <div class="actions">
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-danger">Delete 3 Posts</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
