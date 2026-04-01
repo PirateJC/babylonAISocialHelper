@@ -183,6 +183,7 @@ export default function PostList() {
   const actionLabel = (status: string) => {
     if (status === "draft") return "Edit";
     if (status === "scheduled") return "View";
+    if (status === "failed") return "Retry";
     return "View";
   };
 
@@ -353,6 +354,21 @@ export default function PostList() {
           onChange={(e) => setDateEnd(e.target.value)}
           placeholder="End date"
         />
+
+        <button
+          style={{
+            ...select,
+            cursor: isLoadingRepo ? "wait" : "pointer",
+            fontWeight: 600,
+            color: "#2563eb",
+            border: "1px solid #2563eb",
+            background: "#eff6ff",
+          }}
+          onClick={() => void refreshRepoPosts()}
+          disabled={isLoadingRepo}
+        >
+          {isLoadingRepo ? "⏳ Refreshing…" : "🔄 Refresh"}
+        </button>
       </div>
 
       {isLoadingRepo && (

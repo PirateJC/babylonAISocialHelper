@@ -8,7 +8,8 @@ import CategoryBadge from "./CategoryBadge.tsx";
 import PostPreview from "./PostPreview.tsx";
 import PostEditor from "./PostEditor.tsx";
 import ConfirmModal from "./ConfirmModal.tsx";
-import { approveSinglePost, deleteScheduledPost, deleteFailedPost } from "../services/approve.ts";
+import PlatformResults from "./PlatformResults.tsx";
+import { approveSinglePost, deleteScheduledPost, deleteFailedPost, retryFailedPost } from "../services/approve.ts";
 
 /* ── styles ─────────────────────────────────────────────── */
 
@@ -197,25 +198,10 @@ function ReadOnlyFields({ post }: { post: Post }) {
       </div>
 
       {/* Platform results (failed posts) */}
-      {post.status === "failed" && post.platformResults && (
+      {post.status === "failed" && post.platformResults && post.platformResults.length > 0 && (
         <div style={section}>
           <div style={sectionLabel}>Platform Results</div>
-          {post.platformResults.map((r) => (
-            <div
-              key={r.platform}
-              style={{
-                padding: "8px 12px",
-                marginBottom: 6,
-                borderRadius: 8,
-                background: r.success ? "#dcfce7" : "#fee2e2",
-                fontSize: 13,
-              }}
-            >
-              <strong>{r.platform}:</strong>{" "}
-              {r.success ? `✅ Posted (${r.postId ?? ""})` : `❌ ${r.error ?? "Failed"}`}
-              {r.retryCount > 0 && ` (${r.retryCount} retries)`}
-            </div>
-          ))}
+          <PlatformResults results={post.platformResults} />
         </div>
       )}
     </>
@@ -233,6 +219,7 @@ export default function PostDetail() {
 
   const [isApproving, setIsApproving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(
     null,
@@ -281,6 +268,27 @@ export default function PostDetail() {
       setIsApproving(false);
     }
   }, [token, post, livePost, removeDrafts, refreshRepoPosts, navigate]);
+
+  /* ── retry ──────────────────────────────────────────────── */
+
+  const handleRetry = useCallback(async () => {
+    if (!token || !post) return;
+    setIsRetrying(true);
+    setFeedback(null);
+    try {
+      const newDate = await retryFailedPost(token, post);
+      await refreshRepoPosts();
+      setFeedback({ type: "success", msg: `Post rescheduled for ${newDate}.` });
+      setTimeout(() => navigate("/posts"), 1200);
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        msg: err instanceof Error ? err.message : "Retry failed",
+      });
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [token, post, refreshRepoPosts, navigate]);
 
   /* ── delete ────────────────────────────────────────────── */
 
@@ -399,10 +407,15 @@ export default function PostDetail() {
 
             {post.status === "failed" && (
               <button
-                style={{ ...btn, background: "#f59e0b", color: "#fff" }}
-                onClick={() => alert("Retry — coming in Task 3.12")}
+                style={{
+                  ...btn,
+                  background: isRetrying ? "#fcd34d" : "#f59e0b",
+                  color: "#fff",
+                }}
+                onClick={handleRetry}
+                disabled={isRetrying || isDeleting}
               >
-                🔄 Retry
+                {isRetrying ? "Retrying…" : "🔄 Retry"}
               </button>
             )}
 
@@ -413,7 +426,7 @@ export default function PostDetail() {
                 color: "#fff",
               }}
               onClick={() => setShowDeleteModal(true)}
-              disabled={isApproving || isDeleting}
+              disabled={isApproving || isDeleting || isRetrying}
             >
               {isDeleting ? "Deleting…" : "🗑 Delete"}
             </button>

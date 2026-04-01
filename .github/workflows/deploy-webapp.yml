@@ -1,0 +1,48 @@
+name: Deploy Web App
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'webapp/**'
+      - '.github/workflows/deploy-webapp.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npm run build -w webapp
+        env:
+          VITE_GITHUB_CLIENT_ID: ${{ vars.GITHUB_CLIENT_ID }}
+          VITE_OAUTH_WORKER_URL: ${{ vars.OAUTH_WORKER_URL }}
+          VITE_REPO_OWNER: ${{ vars.REPO_OWNER }}
+          VITE_REPO_NAME: ${{ vars.REPO_NAME }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: webapp/dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
