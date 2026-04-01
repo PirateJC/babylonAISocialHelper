@@ -48,6 +48,50 @@ function mockResult(platform: "x" | "linkedin" | "bluesky"): PlatformResult {
   return { platform, success: true, postId: `dry-run-${platform}`, retryCount: 0 };
 }
 
+/* ── History tracking ──────────────────────────────────────── */
+interface HistoryEntry {
+  id: string;
+  date: string;
+  topic: string;
+  linkUrl: string;
+  category: string;
+  babylonFeatureArea: string;
+  success: boolean;
+}
+
+function updateHistory(post: PostData, date: string, allSucceeded: boolean): void {
+  const historyPath = path.join(repoRoot, "history.json");
+  let history: HistoryEntry[] = [];
+
+  if (fs.existsSync(historyPath)) {
+    try {
+      history = JSON.parse(fs.readFileSync(historyPath, "utf-8"));
+    } catch {
+      history = [];
+    }
+  }
+
+  // Add new entry
+  history.push({
+    id: post.id,
+    date,
+    topic: post.metadata.topic,
+    linkUrl: post.link.url,
+    category: post.category,
+    babylonFeatureArea: post.metadata.babylonFeatureArea,
+    success: allSucceeded,
+  });
+
+  // Prune entries older than 30 days
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 30);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  history = history.filter((entry) => entry.date >= cutoffStr);
+
+  fs.writeFileSync(historyPath, JSON.stringify(history, null, 2) + "\n");
+  console.log(`[Orchestrator] Updated history.json (${history.length} entries, 30-day window).`);
+}
+
 /* ── Main orchestrator ────────────────────────────────────── */
 async function main(): Promise<void> {
   const date = dateOverride ?? getPacificDate();
@@ -127,6 +171,9 @@ async function main(): Promise<void> {
       `[Orchestrator] ⚠️ Some platforms failed. Moved to failed/${date}.json.`,
     );
   }
+
+  // Record in rolling 30-day history
+  updateHistory(post, date, allSucceeded);
 
   // Git commit & push (skip in dry-run)
   if (!dryRun) {
