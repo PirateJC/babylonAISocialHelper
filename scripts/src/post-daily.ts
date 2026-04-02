@@ -144,8 +144,20 @@ async function main(): Promise<void> {
     bsResult = await postToBluesky(post, imagePath);
   }
 
-  // Aggregate
-  const allSucceeded = xResult.success && liResult.success && bsResult.success;
+  // Aggregate — only count configured platforms
+  const results = [xResult, liResult, bsResult];
+  const configuredResults = results.filter(
+    (r) => !r.error?.startsWith("Missing env vars:"),
+  );
+  const skippedPlatforms = results.filter(
+    (r) => r.error?.startsWith("Missing env vars:"),
+  );
+  for (const r of skippedPlatforms) {
+    console.log(`[Orchestrator] ⏭️  Skipping ${r.platform} (not configured)`);
+  }
+  const allSucceeded =
+    configuredResults.length > 0 &&
+    configuredResults.every((r) => r.success);
   const status = allSucceeded ? "all-succeeded" : "partial-failure";
 
   // Cleanup
