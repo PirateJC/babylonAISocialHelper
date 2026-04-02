@@ -7,21 +7,24 @@
     "build": "tsc",
     "start": "tsx src/post-daily.ts",
     "validate": "tsx src/validate-posts.ts",
+    "bundle": "tsx src/bundle-posts.ts",
     "test:dry-run": "tsx src/post-daily.ts --dry-run --date 2099-12-31",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@atproto/api": "^0.13.0",
+    "@octokit/rest": "^21.0.0",
     "agent-twitter-client": "^0.0.18",
     "ajv": "^8.17.0",
     "ajv-formats": "^3.0.0",
-    "@atproto/api": "^0.13.0",
-    "@octokit/rest": "^21.0.0",
+    "archiver": "^7.0.1",
     "libsodium-wrappers": "^0.7.15"
   },
   "devDependencies": {
-    "typescript": "~5.7.0",
-    "tsx": "^4.19.0",
+    "@types/archiver": "^7.0.0",
+    "@types/libsodium-wrappers": "^0.7.14",
     "@types/node": "^22.0.0",
-    "@types/libsodium-wrappers": "^0.7.14"
+    "tsx": "^4.19.0",
+    "typescript": "~5.7.0"
   }
 }
